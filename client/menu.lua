@@ -67,17 +67,7 @@ VehShop.OpenShopMenu = function()
         for _, vehicle in pairs(category.vehicles) do
             vehicle.code = string.lower(vehicle.code or 'unknown')
 
-            local model = (type(vehicle.code) == 'number' and vehicle.code or GetHashKey(vehicle.code))
-            local displayName = GetDisplayNameFromVehicleModel(model)
-            local vehicleName = GetLabelText(displayName)
-
-            if (vehicleName == nil or string.lower(vehicleName) == 'null' or string.lower(vehicleName) == 'carnotfound') then
-                vehicleName = displayName
-            end
-
-            if (vehicleName == nil or string.lower(vehicleName) == 'null' or string.lower(vehicleName) == 'carnotfound') then
-                vehicleName = vehicle.code
-            end
+            local vehicleName = VehShop.ModelToLabel(vehicle.code)
 
             if (firstModel == nil) then
                 firstModel = vehicle.code
@@ -110,6 +100,31 @@ VehShop.OpenShopMenu = function()
         elements = elements
     },
     function(data, menu)
+        local selectedIndex = ((data.current).value or 0) + 1
+        local categoryName = string.lower((data.current or {}).name or 'unknown')
+        local category = (VehShop.Categories or {})[categoryName] or nil
+        local vehicle = (category.vehicles or {})[selectedIndex] or nil
+
+        vehicle.code = string.lower(vehicle.code or 'unknown')
+        vehicle.price = vehicle.price or 0
+
+        local vehicleName = VehShop.ModelToLabel(vehicle.code)
+
+        if (category ~= nil and vehicle ~= nil) then
+            VehShop.ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'vehicle_shop_confirm', {
+                title = _U('confirm_title', vehicleName, VehShop.Formats.NumberToCurrancy(vehicle.price)),
+                align = Config.MenuLocation or 'top-left',
+                elements = {
+                    { label = _U('no'), value = 'no' },
+                    { label = _U('yes'), value = 'yes' },
+                }
+            }, function(data2, menu2)
+                TriggerServerEvent('esx_vehicleshop:buyVehicle', vehicle.code)
+                menu2.close()
+            end, function(data2, menu2)
+                menu2.close()
+            end)
+        end
     end,
     function(data, menu)
         menu.close()
@@ -247,6 +262,8 @@ VehShop.SpawnVehicle = function(position, vehicleHash, cb)
     VehShop.WaitForVehicleIsLoaded(vehicleHash)
 
     VehShop.ESX.Game.SpawnLocalVehicle(vehicleHash, position, position.h or 75.0, function(vehicle)
+        VehShop.SetVehicleProperties(vehicle)
+
         SetEntityAsMissionEntity(vehicle, true, true)
         SetVehicleOnGroundProperly(vehicle)
         FreezeEntityPosition(vehicle, true)
@@ -259,6 +276,28 @@ VehShop.SpawnVehicle = function(position, vehicleHash, cb)
             cb(vehicle)
         end
     end)
+end
+
+VehShop.SetVehicleProperties = function(vehicle)
+    local defaultProps = Config.DefaultVehicleProps or {}
+
+    if (defaultProps == nil or defaultProps == {}) then
+        return
+    end
+
+    if (defaultProps.extras == true) then
+        defaultProps.extras = {}
+
+        for i = 0, 20 do
+            if (DoesExtraExist(vehicle, i)) then
+                defaultProps.extras[i] = true
+            end
+        end
+    else
+        defaultProps.extras = {}
+    end
+
+    VehShop.ESX.Game.SetVehicleProperties(vehicle, defaultProps)
 end
 
 VehShop.DeleteCurrentVehicle = function()
@@ -308,4 +347,21 @@ VehShop.RenderCamera = function(toggle)
     RenderScriptCams(1, 1, 750, 1, 1)
 
     Citizen.Wait(500)
+end
+
+VehShop.ModelToLabel = function(model)
+    model = (type(model) == 'number' and model or GetHashKey(model))
+
+    local displayName = GetDisplayNameFromVehicleModel(model)
+    local vehicleName = GetLabelText(displayName)
+
+    if (vehicleName == nil or string.lower(vehicleName) == 'null' or string.lower(vehicleName) == 'carnotfound') then
+        vehicleName = displayName
+    end
+
+    if (vehicleName == nil or string.lower(vehicleName) == 'null' or string.lower(vehicleName) == 'carnotfound') then
+        vehicleName = model
+    end
+
+    return vehicleName
 end

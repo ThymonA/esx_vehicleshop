@@ -3,6 +3,9 @@ Locales['nl'] = {
     ['open_vehicle_shop'] = 'Druk op ~INPUT_PICKUP~ om audodealer menu te openen',
     ['shop_menu_item'] = '<strong>%s<strong> <span style="color: darkred;">%s</span>',
     ['wait_vehicle'] = 'Even wachten tot voertuig geladen is.....',
+    ['confirm_title'] = 'Wilt u een %s kopen voor %s',
+    ['yes'] = 'Ja',
+    ['no'] = 'Nee',
 
     -- Commands
     ['command_shopvehicle'] = 'Pas voertuigen aan van de cardealer',
@@ -28,5 +31,9 @@ Locales['nl'] = {
     ['category_already_exists'] = 'Categorie %s was al toegevoegd aan de cardealer',
     ['category_doesnt_exists'] = 'Categorie %s bestaat niet of is al verwijderd',
     ['empty_parameter'] = 'Parameter [ %s ] moet wel opgegeven worden',
-    ['empty_number'] = 'Parameter [ %s ] moet wel een getal zijn'
+    ['empty_number'] = 'Parameter [ %s ] moet wel een getal zijn',
+    ['error_invalid_vehicle'] = 'U probeert een voertuig te kopen die niet te koop is in de cardealer',
+    ['error_invalid_price'] = 'U probeert een voertuig te kopen voor 0 euro, helaas is dit niet mogenlijk',
+    ['error_no_money'] = 'U heeft onvoldoende geld op uw bank om dit voertuig te kunnen kopen',
+    ['vehicle_purched'] = 'U heeft een voertuig gekocht en is voorzien van nummerplaat %s, veel plezier met uw nieuwe voertuig'
 }

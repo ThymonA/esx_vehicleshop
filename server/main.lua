@@ -58,3 +58,100 @@ VehShop.ESX.RegisterServerCallback('esx_vehicleshop:getShopData', function(playe
 
     VehShop.StopRequest(playerId)
 end)
+
+RegisterServerEvent('esx_vehicleshop:buyVehicle')
+AddEventHandler('esx_vehicleshop:buyVehicle', function(vehicleCode)
+    vehicleCode = string.lower(vehicleCode or 'unknown')
+
+    local playerId = source
+
+    if (playerId == nil or playerId == 0) then
+        return
+    end
+
+    local xPlayer = VehShop.ESX.GetPlayerFromId(playerId)
+
+    if (xPlayer == nil) then
+        return
+    end
+
+    local vehicle = (VehShop.Vehicles or {})[vehicleCode] or nil
+
+    vehicle.code = string.lower(vehicle.code or 'unknown')
+
+    if (vehicle == nil or vehicle.code == 'unknown') then
+        TriggerClientEvent('esx:showNotification', xPlayer.source, _U('error_invalid_vehicle'))
+        return
+    end
+
+    local hash = vehicle.hash or -1
+
+    if (hash == -1) then
+        hash = GetHashKey(vehicle.code)
+    end
+
+    local price = vehicle.price or 0
+
+    if (price <= 0) then
+        TriggerClientEvent('esx:showNotification', xPlayer.source, _U('error_invalid_price'))
+        return
+    end
+
+    local playerBankMoney = (xPlayer.getAccount('bank') or {}).money or 0
+
+    if (price > playerBankMoney) then
+        TriggerClientEvent('esx:showNotification', xPlayer.source, _U('error_no_money'))
+        return
+    end
+
+    VehShop.GeneratePlateNotExists(function(plate)
+        local props = Config.DefaultVehicleProps or {}
+
+        props.model = hash
+        props.plate = plate
+
+        if (props.extras == true) then
+            props.extras = {}
+
+            for i = 0, 20 do
+                props.extras[i] = true
+            end
+        else
+            props.extras = {}
+        end
+
+        MySQL.Async.execute('INSERT INTO `owned_vehicles` (`owner`, `plate`, `vehicle`, `type`, `stored`) VALUES (@owner, @plate, @vehicle, @type, @stored)', {
+            ['@owner'] = xPlayer.identifier,
+            ['@plate'] = plate,
+            ['@vehicle'] = json.encode(props),
+            ['@type'] = 'car',
+            ['@stored'] = 0
+        }, function(rowChanged)
+            xPlayer.removeAccountMoney('bank', price)
+            TriggerClientEvent('esx:showNotification', xPlayer.source, _U('vehicle_purched', plate))
+            TriggerClientEvent('esx_vehicleshop:vehiclePurchased', xPlayer.source, vehicle.code, props)
+        end)
+    end)
+end)
+
+VehShop.GeneratePlateNotExists = function(cb)
+    local plate = string.upper(VehShop.GeneratePlate())
+
+    MySQL.Async.fetchAll('SELECT * FROM `owned_vehicles` WHERE `plate` = @plate', {
+        ['@plate'] = plate
+    }, function(results)
+        if (results == nil or #results <= 0) then
+            if (cb ~= nil) then
+                cb(plate)
+            else
+                return plate
+            end
+        else
+            if (cb ~= nil) then
+                VehShop.GeneratePlateNotExists(cb)
+            else
+                return VehShop.GeneratePlateNotExists()
+            end
+        end
+    end)
+end

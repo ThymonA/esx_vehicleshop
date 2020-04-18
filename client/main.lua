@@ -37,15 +37,17 @@ Citizen.CreateThread(function()
             local shopLocation = shop.Shop or nil
             local spawnLocation = shop.Spawn or nil
             local cameraLocation = shop.Camera or nil
+            local purchasedSpawnLocation = shop.PurchasedSpawn or nil
 
-            if (shopLocation ~= nil and spawnLocation ~= nil and cameraLocation ~= nil) then
+            if (shopLocation ~= nil and spawnLocation ~= nil and cameraLocation ~= nil and purchasedSpawnLocation ~= nil) then
                 local distance = #(shopLocation - playerCoords)
 
                 if (distance < Config.DrawDistance) then
                     table.insert(VehShop.DrawMarkers, {
                         shop = shopLocation,
                         spawn = spawnLocation,
-                        camera = cameraLocation
+                        camera = cameraLocation,
+                        purchasedSpawn = purchasedSpawnLocation
                     })
                 end
             end

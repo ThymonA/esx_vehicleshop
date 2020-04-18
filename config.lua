@@ -3,6 +3,9 @@ Config.Locale                   = 'nl'
 Config.DrawDistance             = 7.5
 Config.CurrancySymbol           = '€'
 Config.MenuLocation             = 'top-right'
+Config.PlateLetters             = 3
+Config.PlateNumbers             = 3
+Config.PlateUseSpace            = true
 
 -- Vehicle Shops
 Config.Shops = {
@@ -17,7 +20,8 @@ Config.Shops = {
             rotationX = -20.0,
             rotationY = 0.0,
             rotationZ = 40.0
-        }
+        },
+        PurchasedSpawn = { x = -30.75, y = -1089.97, z = 25.43, h = 333.5 }
     }
 }
 
@@ -40,4 +44,68 @@ Config.Marker = {
     ColorRed    = 255,
     ColorGreen  = 255,
     ColorBlue   = 0
+}
+
+Config.DefaultVehicleProps = {
+    modTank = -1,
+    modEngine = -1,
+    modStruts = -1,
+    modFrontBumper = -1,
+    engineHealth = 1000.0,
+    bodyHealth = 1000.0,
+    modRoof = -1,
+    modDial = -1,
+    modXenon = false,
+    modAPlate = 5,
+    modLivery = -1,
+    modPlateHolder = -1,
+    wheels = 0,
+    modGrille = -1,
+    color2 = 0,
+    modEngineBlock = -1,
+    modSpoilers = -1,
+    modTransmission = -1,
+    pearlescentColor = 0,
+    neonColor = { 255, 0, 255 },
+    modSmokeEnabled = false,
+    modFrontWheels = -1,
+    modArchCover = -1,
+    modVanityPlate = -1,
+    modHydrolic = -1,
+    plateIndex = 4,
+    modHorns = -1,
+    modFender = -1,
+    xenonColor = 255,
+    modDoorSpeaker = -1,
+    fuelLevel = 100.0,
+    wheelColor = 0,
+    neonEnabled = { false,false,false,false },
+    modSideSkirt = -1,
+    modBrakes = -1,
+    modAirFilter = -1,
+    modShifterLeavers = -1,
+    modRightFender = -1,
+    modAerials = -1,
+    modArmor = -1,
+    modSeats = -1,
+    modBackWheels = -1,
+    windowTint = -1,
+    modSteeringWheel = -1,
+    modTrunk = -1,
+    extras = true,
+    dirtLevel = 1.0,
+    modSuspension = -1,
+    modFrame = -1,
+    tyreSmokeColor = { 255,255,255} ,
+    modSpeakers = -1,
+    modTrimB = -1,
+    modDashboard = -1,
+    modHood = -1,
+    modTurbo = false,
+    color1 = 134,
+    modOrnaments = -1,
+    modExhaust = -1,
+    modTrimA = -1,
+    modRearBumper = -1,
+    modWindows = -1
 }

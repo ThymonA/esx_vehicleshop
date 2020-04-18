@@ -78,3 +78,29 @@ AddEventHandler('esx_vehicleshop:resetVehicleShop', function()
 
     VehShop.DeleteCurrentVehicle()
 end)
+
+RegisterNetEvent('esx_vehicleshop:vehiclePurchased')
+AddEventHandler('esx_vehicleshop:vehiclePurchased', function(vehicle, props)
+    local position = (VehShop.Marker or {}).purchasedSpawn or {}
+
+    VehShop.DeleteCurrentVehicle()
+    VehShop.RemoveVehicles()
+    VehShop.WaitForVehicleIsLoaded(vehicle)
+
+    if (position ~= nil and position ~= {}) then
+        VehShop.ESX.Game.SpawnVehicle(vehicle, position, position.h or 75.0, function(vehicle)
+            VehShop.ESX.Game.SetVehicleProperties(vehicle, props)
+
+            SetEntityAsMissionEntity(vehicle, true, true)
+            SetVehicleOnGroundProperly(vehicle)
+            SetEntityAsNoLongerNeeded(vehicle)
+            SetVehicleNumberPlateText(vehicle, props.plate)
+            SetModelAsNoLongerNeeded(vehicle)
+            TaskWarpPedIntoVehicle(GetPlayerPed(-1), vehicle, -1)
+
+            VehShop.HasExitedMarker()
+        end)
+    else
+        VehShop.HasExitedMarker()
+    end
+end)
