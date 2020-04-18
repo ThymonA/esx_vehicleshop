@@ -2,50 +2,7 @@ VehShop.OpenShopMenu = function()
     VehShop.ShopMenuIsOpen = true
 
     VehShop.DisableExitVehicle()
-
-    if (VehShop.Categories == nil) then
-        VehShop.ESX.TriggerServerCallback('esx_vehicleshop:getShopData', function(categories, vehicles)
-            local updatedCategories = {}
-
-            for _, category in pairs(categories or {}) do
-                local name = string.lower(category.name or 'unknown')
-                local label = category.label or 'Unknown'
-
-                if (updatedCategories == nil) then
-                    updatedCategories = {}
-                end
-
-                updatedCategories[name] = {
-                    label = label,
-                    vehicles = {}
-                }
-            end
-
-            for _, vehicle in pairs(vehicles or {}) do
-                local code = string.lower(vehicle.code or 'unknown')
-                local category = string.lower(vehicle.category or 'unknown')
-                local price = vehicle.price or 0
-
-                if (updatedCategories ~= nil and updatedCategories[category] ~= nil) then
-                    if (updatedCategories[category].vehicles == nil) then
-                        updatedCategories[category].vehicles = {}
-                    end
-
-                    table.insert(updatedCategories[category].vehicles, {
-                        code = code,
-                        price = price,
-                        hash = vehicle.hash or -1
-                    })
-                end
-            end
-
-            VehShop.Categories = updatedCategories
-        end)
-    end
-
-    while VehShop.Categories == nil do
-        Citizen.Wait(0)
-    end
+    VehShop.LoadShopData()
 
     local elements = {}
     local firstModel = nil
@@ -147,6 +104,56 @@ VehShop.OpenShopMenu = function()
             VehShop.RenderVehicleSpot(vehicleSpawnCode)
         end
     end)
+end
+
+VehShop.OpenSellMenu = function()
+    local playerPed = GetPlayerPed(-1)
+
+    if (not IsPedInAnyVehicle(playerPed, false)) then
+        return
+    end
+
+    local vehicle = GetVehiclePedIsIn(playerPed, false)
+    local plate = VehShop.ESX.Math.Trim(GetVehicleNumberPlateText(vehicle))
+
+    if (plate == nil or plate == '') then
+        return
+    end
+
+    if (GetPedInVehicleSeat(vehicle, -1) ~= playerPed) then
+        ESX.ShowNotification(_U('must_driver'))
+        return
+    end
+
+    VehShop.ESX.TriggerServerCallback('esx_vehicleshop:requestSellVehicle', function(openMenu)
+        if (openMenu) then
+            local price = VehShop.GetCurrentSellPrice()
+
+            VehShop.ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'vehicle_shop', {
+                title = _U('confirm_vehicle_sell', VehShop.Formats.NumberToCurrancy(price)),
+                align = Config.MenuLocation or 'top-left',
+                elements = {
+                    { label = _U('no'), value = 'no' },
+                    { label = _U('yes'), value = 'yes' },
+                }
+            }, function(data, menu)
+                if (data.current.value == 'no') then
+                    menu.close()
+                elseif (data.current.value == 'yes') then
+                    VehShop.ESX.TriggerServerCallback('esx_vehicleshop:sellVehicle', function(sold)
+                        if (sold) then
+                            VehShop.ESX.Game.DeleteVehicle(vehicle)
+                        end
+
+                        menu.close()
+                    end, plate)
+                end
+            end,
+            function(data, menu)
+                menu.close()
+            end)
+        end
+    end, plate)
 end
 
 VehShop.RenderVehicleSpot = function(model)

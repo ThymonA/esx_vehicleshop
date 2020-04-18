@@ -1,11 +1,12 @@
 Config                          = {}
 Config.Locale                   = 'nl'
-Config.DrawDistance             = 7.5
+Config.DrawDistance             = 10
 Config.CurrancySymbol           = '€'
 Config.MenuLocation             = 'top-right'
 Config.PlateLetters             = 3
 Config.PlateNumbers             = 3
 Config.PlateUseSpace            = true
+Config.ResellPercentage         = 75
 
 -- Vehicle Shops
 Config.Shops = {
@@ -21,7 +22,8 @@ Config.Shops = {
             rotationY = 0.0,
             rotationZ = 40.0
         },
-        PurchasedSpawn = { x = -30.75, y = -1089.97, z = 25.43, h = 333.5 }
+        PurchasedSpawn = { x = -30.75, y = -1089.97, z = 25.43, h = 333.5 },
+        Sell = vector3(-44.46, -1082.08, 25.8)
     }
 }
 
@@ -37,13 +39,24 @@ Config.Blip = {
 
 -- Vehicle Shop Markers
 Config.Marker = {
-    Type        = 27,
-    SizeX       = 1.5,
-    SizeY       = 1.5,
-    SizeZ       = 1.5,
-    ColorRed    = 255,
-    ColorGreen  = 255,
-    ColorBlue   = 0
+    ['shop'] = {
+        Type        = 27,
+        SizeX       = 1.5,
+        SizeY       = 1.5,
+        SizeZ       = 1.5,
+        ColorRed    = 255,
+        ColorGreen  = 255,
+        ColorBlue   = 0
+    },
+    ['sell'] = {
+        Type        = 27,
+        SizeX       = 3.5,
+        SizeY       = 3.5,
+        SizeZ       = 1.5,
+        ColorRed    = 255,
+        ColorGreen  = 0,
+        ColorBlue   = 0
+    }
 }
 
 Config.DefaultVehicleProps = {

@@ -68,7 +68,7 @@ end
 VehShop.GeneratePlate = function()
     local plateletters = Config.PlateLetters or 3
     local plateNumbers = Config.PlateNumbers or 3
-    local useSpace = Config.UseSpace or false
+    local useSpace = Config.PlateUseSpace or false
 
     if (useSpace and (plateletters + plateNumbers) >= 8) then
         plateletters = 4

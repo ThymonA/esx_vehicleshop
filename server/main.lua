@@ -53,10 +53,107 @@ VehShop.ESX.RegisterServerCallback('esx_vehicleshop:getShopData', function(playe
         Citizen.Wait(0)
     end
 
-
     cb(VehShop.Categories, VehShop.Vehicles)
 
     VehShop.StopRequest(playerId)
+end)
+
+VehShop.ESX.RegisterServerCallback('esx_vehicleshop:requestSellVehicle', function(playerId, cb, plate)
+    if (VehShop.HasOpenRequest(playerId)) then
+        cb(false)
+    end
+
+    VehShop.StartRequest(playerId)
+
+    while not VehShop.VehiclesLoaded do
+        Citizen.Wait(0)
+    end
+
+    local xPlayer = VehShop.ESX.GetPlayerFromId(playerId)
+
+    if (xPlayer == nil) then
+        return
+    end
+
+    MySQL.Async.fetchAll('SELECT * FROM `owned_vehicles` WHERE `plate` = @plate AND `owner` = @owner', {
+        ['@plate'] = plate,
+        ['@owner'] = xPlayer.identifier,
+    }, function(results)
+        if (results == nil or #results <= 0) then
+            TriggerClientEvent('esx:showNotification', xPlayer.source, _U('error_not_your_vehicle'))
+            cb(false)
+        else
+            local props = json.decode((results[1] or {}).vehicle or '{}')
+            local model = props.model or -1
+
+            for code, vehicle in pairs(VehShop.Vehicles) do
+                if (model == vehicle.hash or GetHashKey(code) == model) then
+                    VehShop.StopRequest(playerId)
+                    cb(true)
+                    return
+                end
+            end
+
+            VehShop.StopRequest(playerId)
+            TriggerClientEvent('esx:showNotification', xPlayer.source, _U('error_hash_mismatch'))
+            cb(false)
+        end
+    end)
+end)
+
+VehShop.ESX.RegisterServerCallback('esx_vehicleshop:sellVehicle', function(playerId, cb, plate)
+    if (VehShop.HasOpenRequest(playerId)) then
+        cb(false)
+    end
+
+    VehShop.StartRequest(playerId)
+
+    while not VehShop.VehiclesLoaded do
+        Citizen.Wait(0)
+    end
+
+    local xPlayer = VehShop.ESX.GetPlayerFromId(playerId)
+
+    if (xPlayer == nil) then
+        return
+    end
+
+    MySQL.Async.fetchAll('SELECT * FROM `owned_vehicles` WHERE `plate` = @plate AND `owner` = @owner', {
+        ['@plate'] = plate,
+        ['@owner'] = xPlayer.identifier,
+    }, function(results)
+        if (results == nil or #results <= 0) then
+            TriggerClientEvent('esx:showNotification', xPlayer.source, _U('error_not_your_vehicle'))
+            cb(false)
+        else
+            local props = json.decode((results[1] or {}).vehicle or '{}')
+            local model = props.model or -1
+
+            for code, vehicle in pairs(VehShop.Vehicles) do
+                if (model == vehicle.hash or GetHashKey(code) == model) then
+                    MySQL.Async.execute('DELETE FROM `owned_vehicles` WHERE `plate` = @plate', {
+                        ['@plate'] = plate
+                    }, function(rowChanged)
+                        local price = VehShop.Formats.Round(((vehicle.price or 0) / 100) * Config.ResellPercentage, 0)
+
+                        xPlayer.addAccountMoney('bank', price)
+
+                        VehShop.StopRequest(playerId)
+                        TriggerClientEvent('esx:showNotification', xPlayer.source, _U('vehicle_sold', VehShop.Formats.NumberToCurrancy(price)))
+                        cb(true)
+
+                        return
+                    end)
+
+                    return
+                end
+            end
+
+            VehShop.StopRequest(playerId)
+            TriggerClientEvent('esx:showNotification', xPlayer.source, _U('error_hash_mismatch'))
+            cb(false)
+        end
+    end)
 end)
 
 RegisterServerEvent('esx_vehicleshop:buyVehicle')

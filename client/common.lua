@@ -10,6 +10,7 @@ VehShop.DrawMarkers         = {}
 VehShop.IsInMarker          = false
 VehShop.MarkerEntered       = false
 VehShop.Marker              = nil
+VehShop.CurrentAction       = nil
 
 -- Blips
 VehShop.BlipsLoaded         = false
@@ -104,3 +105,49 @@ AddEventHandler('esx_vehicleshop:vehiclePurchased', function(vehicle, props)
         VehShop.HasExitedMarker()
     end
 end)
+
+VehShop.LoadShopData = function()
+    if (VehShop.Categories == nil) then
+        VehShop.ESX.TriggerServerCallback('esx_vehicleshop:getShopData', function(categories, vehicles)
+            local updatedCategories = {}
+
+            for _, category in pairs(categories or {}) do
+                local name = string.lower(category.name or 'unknown')
+                local label = category.label or 'Unknown'
+
+                if (updatedCategories == nil) then
+                    updatedCategories = {}
+                end
+
+                updatedCategories[name] = {
+                    label = label,
+                    vehicles = {}
+                }
+            end
+
+            for _, vehicle in pairs(vehicles or {}) do
+                local code = string.lower(vehicle.code or 'unknown')
+                local category = string.lower(vehicle.category or 'unknown')
+                local price = vehicle.price or 0
+
+                if (updatedCategories ~= nil and updatedCategories[category] ~= nil) then
+                    if (updatedCategories[category].vehicles == nil) then
+                        updatedCategories[category].vehicles = {}
+                    end
+
+                    table.insert(updatedCategories[category].vehicles, {
+                        code = code,
+                        price = price,
+                        hash = vehicle.hash or -1
+                    })
+                end
+            end
+
+            VehShop.Categories = updatedCategories
+        end)
+    end
+
+    while VehShop.Categories == nil do
+        Citizen.Wait(0)
+    end
+end
