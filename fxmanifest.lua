@@ -14,9 +14,14 @@ server_scripts {
     '@mysql-async/lib/MySQL.lua',
 
     'config.lua',
+
     'locales/nl.lua',
+    'locales/en.lua',
+
     'server/common.lua',
+
     'shared/shared.lua',
+
     'server/commands.lua',
     'server/main.lua'
 }
@@ -25,9 +30,14 @@ client_scripts {
     '@es_extended/locale.lua',
 
     'config.lua',
+
     'locales/nl.lua',
+    'locales/en.lua',
+
     'client/common.lua',
+
     'shared/shared.lua',
+
     'client/menu.lua',
     'client/main.lua'
 }
