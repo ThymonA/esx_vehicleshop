@@ -4,10 +4,10 @@
 
 [![Developer](https://img.shields.io/badge/Developer-TigoDevelopment-darkgreen)](https://github.com/TigoDevelopment)
 [![Discord](https://img.shields.io/badge/Discord-Tigo%239999-purple)](https://discordapp.com/users/636509961375055882)
-[![Version](https://img.shields.io/badge/Version-1.0.0-darkgreen)](https://github.com/TigoDevelopment/esx_customJobs/blob/master/version)
-[![Version](https://img.shields.io/badge/License-MIT-darkgreen)](https://github.com/TigoDevelopment/esx_customJobs/blob/master/LICENSE)
+[![Version](https://img.shields.io/badge/Version-1.0.0-darkgreen)](https://github.com/TigoDevelopment/esx_vehicleshop/blob/master/version)
+[![Version](https://img.shields.io/badge/License-MIT-darkgreen)](https://github.com/TigoDevelopment/esx_vehicleshop/blob/master/LICENSE)
 
-### About Custom ESX Jobs
+### About ESX Vehicle Shop
 
 ESX Vehicle Shop adds an vehicle shop to the game, any player can buy vehicles and sell vehicles with a menu based interaction.
 
