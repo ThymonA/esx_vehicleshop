@@ -13,6 +13,8 @@ ESX Vehicle Shop adds an vehicle shop to the game, any player can buy vehicles a
 
 ### Requirement
 - **es_extended** | [GitHub](https://github.com/ESX-Org/es_extended)
+- **async** | [GitHub](https://github.com/ESX-Org/async)
+- **mysql-async** | [GitHub](https://github.com/brouznouf/fivem-mysql-async)
 
 ### Get Started
 1) Copy **esx_vehicleshop** to your FXServer resource folder

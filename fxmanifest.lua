@@ -41,3 +41,9 @@ client_scripts {
     'client/menu.lua',
     'client/main.lua'
 }
+
+dependencies {
+    'async',
+    'es_extended',
+    'mysql-async'
+}
