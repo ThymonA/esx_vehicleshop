@@ -181,11 +181,7 @@ AddEventHandler('esx_vehicleshop:buyVehicle', function(vehicleCode)
         return
     end
 
-    local hash = vehicle.hash or -1
-
-    if (hash == -1) then
-        hash = GetHashKey(vehicle.code)
-    end
+    hash = GetHashKey(vehicle.code)
 
     local price = vehicle.price or 0
 
